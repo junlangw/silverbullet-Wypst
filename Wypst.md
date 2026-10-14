@@ -34,6 +34,12 @@ Renders `$ ... $` (inline) and `$$ ... $$` (block) math. Typst uses [wypst](http
 
 A formula with a LaTeX command (a backslash followed by a non-space character, like `\pi`) is LaTeX. Everything else is Typst. This rule follows the Logseq plugin [logseq-wypst](https://github.com/luh-05/logseq-wypst).
 
+To render everything as Typst, turn off "Detect LaTeX" in `Configuration: Open`, or set this in CONFIG:
+
+```lua
+config.set("silverbulletWypst.detectLatex", false)
+```
+
 ## Examples
 Typst: $sum_(n >= 1) 1/n^2 = pi^2/6$
 
@@ -74,14 +80,36 @@ syntax.define {
 
 ## Implementation
 ```space-lua
+-- priority: 100
+config.defineCategory {
+  name = "Silverbullet Wypst",
+  description = "Typst and LaTeX math rendering.",
+}
+
+config.define("silverbulletWypst", {
+  description = "Silverbullet Wypst math rendering",
+  type = "object",
+  properties = {
+    detectLatex = {
+      type = "boolean",
+      default = true,
+      description = "Render formulas with a LaTeX command (like \\pi) with KaTeX. Turn off to render everything as Typst.",
+      ui = { category = "Silverbullet Wypst", label = "Detect LaTeX" },
+    },
+  },
+})
+```
+
+```space-lua
 latex = {
   katex = js.import(string.format("%s.fs/Library/junlangw/Silverbullet-Wypst/katex.mjs", system.getURLPrefix())),
   typst = js.import(string.format("%s.fs/Library/junlangw/Silverbullet-Wypst/typst.mjs", system.getURLPrefix()))
 }
 
--- LaTeX if the expression has a command (a backslash followed by a non-space), otherwise Typst
+-- LaTeX if the expression has a command (a backslash followed by a non-space), otherwise Typst.
+-- Setting silverbulletWypst.detectLatex to false renders everything as Typst.
 local function renderToString(expression, options)
-  if string.find(expression, "\\%S") then
+  if config.get("silverbulletWypst.detectLatex", true) and string.find(expression, "\\%S") then
     return latex.katex.renderToString(expression, options)
   end
   return latex.typst.renderToString(expression, options)

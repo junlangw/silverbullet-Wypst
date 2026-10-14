@@ -17,5 +17,11 @@ Typst and LaTeX math for [Silverbullet](https://silverbullet.md). A fork of [Sil
 
 A formula with a LaTeX command (a backslash followed by a non-space character, like `\pi`) is rendered with KaTeX. Everything else is rendered as Typst. This rule follows the Logseq plugin [logseq-wypst](https://github.com/luh-05/logseq-wypst).
 
+To render everything as Typst, turn off "Detect LaTeX" in `Configuration: Open`, or set this in CONFIG:
+
+```lua
+config.set("silverbulletWypst.detectLatex", false)
+```
+
 ## License
 MIT. Bundled code keeps its own license: wypst (MIT), KaTeX (MIT), Typst (Apache-2.0). The license files are in `Silverbullet-Wypst/`.
